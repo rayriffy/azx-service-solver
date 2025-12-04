@@ -21,6 +21,8 @@ export const App = () => {
     goToStep,
     nextStep,
     prevStep,
+    importGrid,
+    exportGrid,
   } = useSolver()
 
   const { setInputRef, focusNextCell } = useGridInput(grid.length, grid[0]?.length ?? 0)
@@ -41,6 +43,8 @@ export const App = () => {
           onWidthChange={setWidth}
           onHeightChange={setHeight}
           onCreateGrid={initializeGrid}
+          onImportGrid={importGrid}
+          onExportGrid={exportGrid}
         />
 
         <GridInput

@@ -68,6 +68,36 @@ export const useSolver = () => {
     setCurrentStep(0)
   }, [width, height])
 
+  const importGrid = useCallback((newGrid: number[][]) => {
+    if (!newGrid || newGrid.length === 0 || !newGrid[0] || newGrid[0].length === 0) {
+      return false
+    }
+    
+    const newHeight = newGrid.length
+    const newWidth = newGrid[0].length
+    
+    // Validate that all rows have the same length and values are 0-9
+    for (const row of newGrid) {
+      if (row.length !== newWidth) return false
+      for (const cell of row) {
+        if (typeof cell !== 'number' || cell < 0 || cell > 9 || !Number.isInteger(cell)) {
+          return false
+        }
+      }
+    }
+    
+    setWidth(newWidth)
+    setHeight(newHeight)
+    setGrid(newGrid.map(row => [...row]))
+    setSolution(null)
+    setCurrentStep(0)
+    return true
+  }, [])
+
+  const exportGrid = useCallback(() => {
+    return JSON.stringify(grid, null, 2)
+  }, [grid])
+
   const updateCell = useCallback((row: number, col: number, value: number) => {
     setGrid(prev => {
       const newGrid = prev.map(r => [...r])
@@ -147,5 +177,7 @@ export const useSolver = () => {
     goToStep,
     nextStep,
     prevStep,
+    importGrid,
+    exportGrid,
   }
 }
