@@ -3,6 +3,7 @@ interface GridInputProps {
   currentDisplayGrid: number[][]
   highlightedCells: Set<string>
   hasSolution: boolean
+  isSolving: boolean
   onCellChange: (row: number, col: number, value: number) => void
   onSolve: () => void
   onReset: () => void
@@ -15,6 +16,7 @@ export const GridInput = ({
   currentDisplayGrid,
   highlightedCells,
   hasSolution,
+  isSolving,
   onCellChange,
   onSolve,
   onReset,
@@ -63,7 +65,7 @@ export const GridInput = ({
                     max={9}
                     value={hasSolution ? (displayValue || '') : (cell || '')}
                     onChange={(e) => handleCellChange(rowIdx, colIdx, e.target.value)}
-                    disabled={hasSolution}
+                    disabled={hasSolution || isSolving}
                     className={`
                       w-12 h-12 text-center text-xl font-bold rounded-xl 
                       border-2 transition-all duration-300
@@ -86,10 +88,20 @@ export const GridInput = ({
       <div className="flex gap-4">
         <button
           onClick={onSolve}
-          disabled={hasSolution}
-          className="px-8 py-3 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:from-slate-300 disabled:to-slate-400 text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-orange-500/30 disabled:shadow-none"
+          disabled={hasSolution || isSolving}
+          className="px-8 py-3 bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:from-slate-300 disabled:to-slate-400 text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-orange-500/30 disabled:shadow-none flex items-center gap-2"
         >
-          🔍 Solve Puzzle
+          {isSolving ? (
+            <>
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Solving...
+            </>
+          ) : (
+            '🔍 Solve Puzzle'
+          )}
         </button>
         {hasSolution && (
           <button
@@ -103,4 +115,3 @@ export const GridInput = ({
     </div>
   )
 }
-

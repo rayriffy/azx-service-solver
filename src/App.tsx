@@ -13,6 +13,7 @@ export const App = () => {
     currentDisplayGrid,
     highlightedCells,
     totalCleared,
+    isSolving,
     initializeGrid,
     updateCell,
     solve,
@@ -47,6 +48,7 @@ export const App = () => {
           currentDisplayGrid={currentDisplayGrid}
           highlightedCells={highlightedCells}
           hasSolution={!!solution}
+          isSolving={isSolving}
           onCellChange={updateCell}
           onSolve={solve}
           onReset={reset}

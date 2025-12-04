@@ -1,10 +1,20 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import type { Step } from '../types'
-import { solvePuzzle } from '../lib/solver'
 import { createEmptyGrid } from '../lib/utils'
 
 const DEFAULT_WIDTH = 8
 const DEFAULT_HEIGHT = 14
+
+interface WorkerMessage {
+  type: 'solve'
+  grid: number[][]
+}
+
+interface WorkerResponse {
+  type: 'result' | 'error'
+  steps?: Step[]
+  error?: string
+}
 
 export const useSolver = () => {
   const [width, setWidth] = useState(DEFAULT_WIDTH)
@@ -14,6 +24,43 @@ export const useSolver = () => {
   )
   const [solution, setSolution] = useState<Step[] | null>(null)
   const [currentStep, setCurrentStep] = useState(0)
+  const [isSolving, setIsSolving] = useState(false)
+  
+  const workerRef = useRef<Worker | null>(null)
+
+  // Initialize worker
+  useEffect(() => {
+    const worker = new Worker(
+      new URL('../workers/solver.worker.ts', import.meta.url),
+      { type: 'module' }
+    )
+    
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      const { type } = event.data
+      
+      if (type === 'result' && event.data.steps) {
+        setSolution(event.data.steps)
+        setCurrentStep(0)
+        setIsSolving(false)
+      } else if (type === 'error') {
+        console.error('Solver error:', event.data.error)
+        setSolution([])
+        setIsSolving(false)
+      }
+    }
+    
+    worker.onerror = (error) => {
+      console.error('Worker error:', error)
+      setIsSolving(false)
+    }
+    
+    workerRef.current = worker
+    
+    return () => {
+      worker.terminate()
+      workerRef.current = null
+    }
+  }, [])
 
   const initializeGrid = useCallback(() => {
     setGrid(createEmptyGrid(height, width))
@@ -31,10 +78,14 @@ export const useSolver = () => {
   }, [])
 
   const solve = useCallback(() => {
-    const steps = solvePuzzle(grid)
-    setSolution(steps)
-    setCurrentStep(0)
-  }, [grid])
+    if (!workerRef.current || isSolving) return
+    
+    setIsSolving(true)
+    workerRef.current.postMessage({
+      type: 'solve',
+      grid
+    } satisfies WorkerMessage)
+  }, [grid, isSolving])
 
   const reset = useCallback(() => {
     setSolution(null)
@@ -85,6 +136,9 @@ export const useSolver = () => {
     highlightedCells,
     totalCleared,
     
+    // Loading state
+    isSolving,
+    
     // Actions
     initializeGrid,
     updateCell,
@@ -95,4 +149,3 @@ export const useSolver = () => {
     prevStep,
   }
 }
-
