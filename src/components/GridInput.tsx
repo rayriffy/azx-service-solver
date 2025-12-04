@@ -29,10 +29,7 @@ export const GridInput = ({
     if (value.length > 0 && numValue >= 0 && numValue <= 9) {
       const isLastCell = row === grid.length - 1 && col === grid[0].length - 1
       
-      if (isLastCell) {
-        // Auto-solve when last cell is filled
-        setTimeout(() => onSolve(), 50)
-      } else {
+      if (!isLastCell) {
         focusNextCell(row, col)
       }
     }
