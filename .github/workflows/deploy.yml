@@ -1,0 +1,43 @@
+name: Deployment
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: pnpm
+        uses: pnpm/action-setup@v2
+      - name: node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: install
+        run: pnpm -r i --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: configure
+        uses: actions/configure-pages@v5
+      - name: upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: 'logging'
+        run: echo "Deployed at ${{ steps.deployment.outputs.page_url }}"
