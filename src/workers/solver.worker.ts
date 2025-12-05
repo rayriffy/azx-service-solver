@@ -216,4 +216,3 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     }
   }
 }
-
