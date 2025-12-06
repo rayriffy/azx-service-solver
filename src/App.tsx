@@ -14,6 +14,7 @@ export const App = () => {
     highlightedCells,
     totalCleared,
     isSolving,
+    isWasmReady,
     initializeGrid,
     updateCell,
     solve,
@@ -53,6 +54,7 @@ export const App = () => {
           highlightedCells={highlightedCells}
           hasSolution={!!solution}
           isSolving={isSolving}
+          isWasmReady={isWasmReady}
           onCellChange={updateCell}
           onSolve={solve}
           onReset={reset}

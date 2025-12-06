@@ -5,8 +5,10 @@
   "type": "module",
   "packageManager": "pnpm@10.15.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "wasm-pack build --target web && vite",
+    "build": "wasm-pack build --target web --release && tsc -b && vite build",
+    "build:wasm": "wasm-pack build --target web",
+    "build:wasm:release": "wasm-pack build --target web --release",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -28,6 +30,7 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-wasm": "^3.4.1"
   }
 }

@@ -11,7 +11,7 @@ interface WorkerMessage {
 }
 
 interface WorkerResponse {
-  type: 'result' | 'error'
+  type: 'result' | 'error' | 'ready'
   steps?: Step[]
   error?: string
 }
@@ -25,6 +25,7 @@ export const useSolver = () => {
   const [solution, setSolution] = useState<Step[] | null>(null)
   const [currentStep, setCurrentStep] = useState(0)
   const [isSolving, setIsSolving] = useState(false)
+  const [isWasmReady, setIsWasmReady] = useState(false)
   
   const workerRef = useRef<Worker | null>(null)
 
@@ -38,7 +39,9 @@ export const useSolver = () => {
     worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const { type } = event.data
       
-      if (type === 'result' && event.data.steps) {
+      if (type === 'ready') {
+        setIsWasmReady(true)
+      } else if (type === 'result' && event.data.steps) {
         setSolution(event.data.steps)
         setCurrentStep(0)
         setIsSolving(false)
@@ -168,6 +171,7 @@ export const useSolver = () => {
     
     // Loading state
     isSolving,
+    isWasmReady,
     
     // Actions
     initializeGrid,
