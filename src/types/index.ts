@@ -9,3 +9,5 @@ export interface Step {
   sum: number
   gridAfter: number[][]
 }
+
+

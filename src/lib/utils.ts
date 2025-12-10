@@ -21,3 +21,5 @@ export const getSelectionType = (cells: Cell[]): 'Single' | 'Horizontal' | 'Vert
 export const createEmptyGrid = (height: number, width: number): number[][] => {
   return Array(height).fill(null).map(() => Array(width).fill(0))
 }
+
+
